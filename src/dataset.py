@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from collections import Counter
 
-import config
+from src import config
 
 
 class MnistDataset:
