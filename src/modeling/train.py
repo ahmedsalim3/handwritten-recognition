@@ -1,3 +1,5 @@
+from matplotlib import pyplot as plt
+import numpy as np
 import torch
 import torch.nn as nn
 import logging
@@ -134,3 +136,108 @@ def train_model(model, train_loader, valid_loader, lr=0.001, num_epochs=10, devi
             valid_loss_min = val_loss
     
     return model, results
+
+
+def test_model(model, test_loader, device=config.DEVICE):
+    
+    criterion = nn.CrossEntropyLoss()
+    
+    correct = 0
+    test_loss = 0
+    class_correct = list(0. for i in range(10))
+    class_total = list(0. for i in range(10))
+    
+    model = model.to(device)
+
+    model.eval()  # Set model to evaluation mode (turns off dropout)
+    
+    for images, labels in test_loader:
+        images, labels = images.to(device), labels.to(device)
+        
+        output = model(images)
+        loss = criterion(output, labels)
+        test_loss += loss.item()
+        
+        _, pred = torch.max(output, 1)
+        correct = pred.eq(labels.data.view_as(pred)).cpu().numpy()
+        
+        for i in range(len(labels)):
+            label = labels.data[i].item()
+            class_correct[label] += correct[i].item()
+            class_total[label] += 1
+
+    test_loss = test_loss / len(test_loader)
+    logging.info(f'For {type(model).__name__}:')
+    logging.info(f"Test Loss: {test_loss:.4f}")
+    logging.info(f"Correctly predicted per class: {class_correct}, Total correctly predicted: {sum(class_correct)}")
+    logging.info(f"Total Predictions per class: {class_total}, Total predictions to be made: {sum(class_total)}\n")
+
+    for i in range(10):
+        if class_total[i] > 0:
+            logging.info(f"Test Accuracy of class {i}: {100. * class_correct[i] / class_total[i]:.2f}% "
+                  f"({int(class_correct[i])} of {int(class_total[i])} correct)")
+        else:
+            logging.info(f"Test Accuracy of class {i}: N/A (no test samples)")
+
+    overall_accuracy = 100. * np.sum(class_correct) / np.sum(class_total)
+    logging.info(f"Overall Test Accuracy: {overall_accuracy:.2f}% "
+          f"({int(np.sum(class_correct))} of {int(np.sum(class_total))} correct)")
+
+    # Obtain one batch of test images
+    dataiter = iter(test_loader)
+    images, labels = next(dataiter)
+
+    # Get model predictions
+    images, labels = images.to(device), labels.to(device)
+    
+    output = model(images)
+    _, preds = torch.max(output, 1)
+
+    # Convert images to NumPy
+    images = images.cpu().numpy()
+
+    # Plot the images with predictions
+    fig = plt.figure(figsize=(25, 4))
+    num_images = min(20, len(images))
+    for idx in range(num_images):
+        ax = fig.add_subplot(2, 10, idx+1, xticks=[], yticks=[])
+        ax.imshow(np.transpose(images[idx], (1, 2, 0)))
+        ax.set_title("{} ({})".format(preds[idx].item(), labels[idx].item()),
+                     color=("blue" if preds[idx] == labels[idx] else "red"))
+
+    plt.tight_layout()
+    return fig
+
+
+def plot_training_history(results):
+    """
+    Plot the training and validation loss and accuracy over multiple epochs
+
+    Args:
+        results: An instance of TrainingResults containing recorded metrics
+    """
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
+
+    # losses
+    ax1.plot(results.epochs, results.train_losses, label="Training Loss")
+    if results.val_losses:
+        ax1.plot(results.epochs, results.val_losses, label="Validation Loss")
+    ax1.set_xlabel("Epochs")
+    ax1.set_ylabel("Loss")
+    ax1.set_title("Training and Validation Loss")
+    ax1.legend()
+    ax1.grid(True)
+
+    # accuracies
+    ax2.plot(results.epochs, results.train_accs, label="Training Accuracy")
+    if results.val_accs:
+        ax2.plot(results.epochs, results.val_accs, label="Validation Accuracy")
+    ax2.set_xlabel("Epochs")
+    ax2.set_ylabel("Accuracy (%)")
+    ax2.set_title("Training and Validation Accuracy")
+    ax2.legend()
+    ax2.grid(True)
+
+    plt.tight_layout()
+    return fig
