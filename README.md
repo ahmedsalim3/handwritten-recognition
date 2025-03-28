@@ -1,57 +1,71 @@
-# Repository Template [Edit this title]
+# MNIST Handwritten Digits Recognition
 
-:pencil2: Add description of the project here.
+The [MNIST](http://yann.lecun.com/exdb/mnist/) database is a dataset of handwritten digits. It has 60,000 training samples, and 10,000 test samples. Each image is represented by 28x28 pixels, each containing a value 0 - 255 with its grayscale value.
 
-## Requirements
+![CNN Model](./results/cnn/training_history.png)
 
-:pencil2: What are the requirements to install and run the project.
+![Results](./results/ffnn/test_results.png)
 
-## How to install
+## How to Install
 
-:pencil2: Add installation instructions here.
+Install required dependencies using:
 
-## How to run
+```bash
+pip install -r requirements.txt
+```
 
-:pencil2: Add run instructions here. This includes necessary configurations as well as the commands used.
+## How to Run
+
+### Training a Model
+
+To train a model, run:
+
+```bash
+train_model.py [-h] --model {cnn,ffnn} [--epochs EPOCHS] [--debug_mode]
+```
+
+Example with Feed Forward Neural Network (FFNN) model:
+
+```bash
+python3 -m src.train_model --model ffnn --epochs 20
+```
+
+
+### Running Inference
+
+To run inference on a trained model:
+
+```bash
+# Usage
+python3 -m src.inference [-h] --model {cnn,ffnn} --image_path IMAGE_PATH [--requests]
+```
+
+Use the `--requests` flag when providing a URL as the image path:
+    
+```sh
+python3 -m src.inference \
+    --model ffnn \
+    --image_path "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Number_1_in_green_rounded_square.svg/512px-Number_1_in_green_rounded_square.svg.png?20080406024426" \
+    --requests
+```
 
 ## Repo's directory structure
 
 The directory structure below shows the nature of files/directories used in this repo.
 
 ```sh
-template_repo
-├── CHANGELOG.md      <- Log of changes made
-│
 ├── README.md
-│
-├── .gitignore        <- Specifies intentionally untracked files to ignore by git
-│
-├── configs           <- Dir to store config files. Conda env, requirements.txt, etc.
+├── .gitignore
 │
 ├── data              <- Dir structure.
-│   ├── external      <- Data from third party sources
-│   │── interim       <- Intermediate data that has been transformed.
-│   ├── processed     <- The final, canonical datasets and results
-│   └── raw           <- The original, immutable data dump
+│   └── MNIST         <- The original, immutable data dump
 │
-├── docs              <- Dir to store documentation.
+├── models            <- Trained models
 │
-├── models            <- Trained and serialized models, model predictions, or model summaries
-├── notebooks         <- Dir to store Jupyter, R Markdown notebooks, etc.
-│
-├── src               <- Dir to store source code for this project
+└── src
+    ├── config.py
+    ├── dataset.py
+    ├── inference.py
+    ├── modeling
+    └── train_model.py
 ```
-
-## Team Structure and Contribution
-
-Use this space to write your team names and their contribution.
-
-## References
-
-Provide references of repositories, articles, other work used by your teams.
-
-[DO NOT REMOVE]
-
-Template repo derived from: http://drivendata.github.io/cookiecutter-data-science
-
-Template created by: @ahmeds-data @pebelone
