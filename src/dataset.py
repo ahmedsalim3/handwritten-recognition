@@ -140,7 +140,7 @@ class MnistEDA:
         images, labels = next(dataiter)
         fig = plt.figure(figsize=(30, 10))
         for i in range(len(labels)):
-            ax = fig.add_subplot(2, 10, i + 1, xticks=[], yticks=[])
+            ax = fig.add_subplot(2, config.BATCH_SIZE, i + 1, xticks=[], yticks=[])
             plt.imshow(np.squeeze(images[i]))
             ax.set_title(labels[i].item(), color="blue")
         return fig
