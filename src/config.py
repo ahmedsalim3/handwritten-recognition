@@ -11,7 +11,7 @@ BATCH_SIZE = 32
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-DATA_PATH = PROJECT_ROOT / "data" / "raw"
+DATA_PATH = PROJECT_ROOT / "data"
 MODEL_PATH = PROJECT_ROOT / "models"
 # RESULTS_PATH = PROJECT_ROOT / "results"
 
