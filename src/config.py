@@ -13,10 +13,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 DATA_PATH = PROJECT_ROOT / "data"
 MODEL_PATH = PROJECT_ROOT / "models"
-# RESULTS_PATH = PROJECT_ROOT / "results"
+RESULTS_PATH = PROJECT_ROOT / "results"
 
 DATA_PATH.mkdir(parents=True, exist_ok=True)
-# RESULTS_PATH.mkdir(parents=True, exist_ok=True)
+RESULTS_PATH.mkdir(parents=True, exist_ok=True)
 MODEL_PATH.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
